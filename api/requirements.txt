@@ -1,3 +1,8 @@
 fastapi
 uvicorn
 pydantic
+nfl-data-py
+openai
+requests
+python-dotenv
+pandas==2.2.3

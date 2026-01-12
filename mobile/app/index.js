@@ -1,22 +1,59 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, SafeAreaView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, SafeAreaView, ActivityIndicator } from 'react-native';
 import { useRouter, Link } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
-  const handleLogin = () => {
+  useEffect(() => {
+    checkLoginStatus();
+  }, []);
+
+  const checkLoginStatus = async () => {
+    try {
+      const userSession = await AsyncStorage.getItem('userSession');
+      if (userSession) {
+        // If session exists, redirect to predictions
+        router.replace('/predictions');
+      }
+    } catch (e) {
+      console.error('Failed to load session', e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleLogin = async () => {
     const validEmails = ['johnpritch11@gmail.com', 'bradkirshenbaum@gmail.com'];
     const validPassword = 'bils123';
 
     if (validEmails.includes(email.toLowerCase()) && password === validPassword) {
-      router.replace('/home');
+      try {
+        // Save session to persistent storage
+        await AsyncStorage.setItem('userSession', JSON.stringify({
+          email: email.toLowerCase(),
+          loginTime: new Date().toISOString()
+        }));
+        router.replace('/predictions');
+      } catch (e) {
+        Alert.alert('Error', 'Failed to save login session');
+      }
     } else {
       Alert.alert('Login Failed', 'Invalid email or password (Hint: bils123)');
     }
   };
+
+  if (isLoading) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#000" />
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>

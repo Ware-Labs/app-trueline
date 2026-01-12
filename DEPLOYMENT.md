@@ -33,7 +33,12 @@ docker push <AWS_ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/trueline-api:latest
 4. Choose the `trueline-api` repository and the `latest` tag.
 5. In **Deployment settings**, choose **Automatic** if you want App Runner to redeploy when a new image is pushed.
 6. In **Configure service**, set the port to `8000`.
-7. Review and **Create & Deploy**.
+7. **Environment Variables**: Add the following:
+   - `APP_ENV`: `production`
+   - `OPENAI_API_KEY`: your-key
+   - `THE_ODDS_API_KEY`: your-key
+8. Review and **Create & Deploy**.
+9. Your production API will be available at: `https://zpz97xmkin.us-east-1.awsapprunner.com`
 
 ## Mobile App Deployment (Expo Dev Client)
 
@@ -52,7 +57,7 @@ npm install -g eas-cli
 ```
 
 ### 3. Build the Development Client
-Since we are using `expo-dev-client`, you must build a "Development Build" first.
+Since we are using `expo-dev-client`, you must build a "Development Build" first. The API URL is managed in `mobile/eas.json` under each profile's `env` section.
 
 **For iOS Simulator:**
 ```bash
